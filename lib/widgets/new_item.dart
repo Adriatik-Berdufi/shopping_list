@@ -28,7 +28,13 @@ class _NewItamState extends State<NewItem> {
                   label: Text('name'),
                 ),
                 validator: (value) {
-                  return 'Demo...';
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length <= 3 ||
+                      value.trim().length > 50) {
+                    return 'Must be between 3 and 50 characters';
+                  }
+                  return null;
                 },
               ),
               Row(
@@ -40,6 +46,15 @@ class _NewItamState extends State<NewItem> {
                         label: Text('Quantity'),
                       ),
                       initialValue: '1',
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            int.tryParse(value) == null ||
+                            int.tryParse(value)! <= 0) {
+                          return 'must be a valid positive number';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -57,7 +72,10 @@ class _NewItamState extends State<NewItem> {
                                 Container(
                                   width: 24,
                                   height: 24,
-                                  color: category.value.color,
+                                  decoration: BoxDecoration(
+                                    color: category.value.color,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 const SizedBox(width: 16),
                                 Text(category.value.title),
