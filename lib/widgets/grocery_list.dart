@@ -68,10 +68,26 @@ class _GroceryListState extends State<GroceryList> {
     _groceryItem.add(newItem);
   }
 
-  void _removeItem(GroceryItem item) {
+  void _removeItem(GroceryItem item) async {
+    final index = _groceryItem.indexOf(item);
     setState(() {
       _groceryItem.remove(item);
     });
+    final url = Uri.https('flutter-projects-a2fcc-default-rtdb.firebaseio.com',
+        'shopping_list/${item.id}.json');
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      setState(() {
+        //show errore message
+        _groceryItem.insert(index, item);
+      });
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Failed to delete item. Please try again later.'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override

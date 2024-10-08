@@ -42,12 +42,10 @@ class _NewItamState extends State<NewItem> {
         }),
       );
 
-      print(response.body);
       if (!context.mounted) {
         return;
       }
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print(responseData);
       Navigator.of(context).pop(GroceryItem(
         id: responseData['name'],
         name: _enterName,
