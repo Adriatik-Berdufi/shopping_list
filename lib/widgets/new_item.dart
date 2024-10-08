@@ -17,7 +17,7 @@ class NewItem extends StatefulWidget {
 
 class _NewItamState extends State<NewItem> {
   final _formKey = GlobalKey<FormState>();
-
+  var _isLoading = false;
   var _enterName = '';
   var _enterQuantity = 1;
   var _selectedCategory = categories[Categories.fruit]!;
@@ -25,6 +25,10 @@ class _NewItamState extends State<NewItem> {
   void _saveItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        _isLoading = true;
+      });
+
       final url = Uri.https(
           'flutter-projects-a2fcc-default-rtdb.firebaseio.com',
           'shopping_list.json');
@@ -152,21 +156,25 @@ class _NewItamState extends State<NewItem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      _formKey.currentState!.reset();
-                    },
+                    onPressed: _isLoading
+                        ? null
+                        : () {
+                            _formKey.currentState!.reset();
+                          },
                     child: const Text('Reset'),
                   ),
                   const SizedBox(width: 18),
                   ElevatedButton(
-                    onPressed: _saveItem,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.add),
-                        SizedBox(width: 6),
-                        Text('Add Item')
-                      ],
-                    ),
+                    onPressed: _isLoading ? null : _saveItem,
+                    child: _isLoading
+                        ? const Text('Saving...')
+                        : const Row(
+                            children: [
+                              Icon(Icons.add),
+                              SizedBox(width: 6),
+                              Text('Add Item')
+                            ],
+                          ),
                   ),
                 ],
               ),
