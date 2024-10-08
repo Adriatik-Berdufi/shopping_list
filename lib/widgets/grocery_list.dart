@@ -34,6 +34,12 @@ class _GroceryListState extends State<GroceryList> {
         _error = 'Faild to fetch data. Plese try again later.';
       });
     }
+    if (response.body == 'null') {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
     final Map<String, dynamic> listData = jsonDecode(response.body);
     /* print(listData); */
     final List<GroceryItem> loadeditems = [];
@@ -81,13 +87,13 @@ class _GroceryListState extends State<GroceryList> {
         //show errore message
         _groceryItem.insert(index, item);
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete item. Please try again later.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Failed to delete item. Please try again later.'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 
   @override
