@@ -27,39 +27,48 @@ class _GroceryListState extends State<GroceryList> {
   void _loadItem() async {
     final url = Uri.https('flutter-projects-a2fcc-default-rtdb.firebaseio.com',
         'shopping_list.json');
-
-    final response = await http.get(url);
-    if (response.statusCode >= 400) {
+    try {
+      final response = await http.get(url);
+      if (response.statusCode >= 400) {
+        setState(() {
+          _error = 'Faild to fetch data. Plese try again later.';
+        });
+      }
+      if (response.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      final Map<String, dynamic> listData = jsonDecode(response.body);
+      final List<GroceryItem> loadeditems = [];
+      for (final item in listData.entries) {
+        final category = categories.entries
+            .firstWhere((el) => el.value.title == item.value['category'])
+            .value;
+        loadeditems.add(
+          GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category,
+          ),
+        );
+      }
       setState(() {
-        _error = 'Faild to fetch data. Plese try again later.';
+        _groceryItem = loadeditems;
+        _isLoading = false;
       });
-    }
-    if (response.body == 'null') {
+    } catch (e) {
+      setState(() {
+        _error = 'Something went wrong! Plese try again later.';
+      });
+    } finally {
+      // Imposta sempre _isLoading su false
       setState(() {
         _isLoading = false;
       });
-      return;
     }
-    final Map<String, dynamic> listData = jsonDecode(response.body);
-    /* print(listData); */
-    final List<GroceryItem> loadeditems = [];
-    for (final item in listData.entries) {
-      final category = categories.entries
-          .firstWhere((el) => el.value.title == item.value['category'])
-          .value;
-      loadeditems.add(
-        GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category,
-        ),
-      );
-    }
-    setState(() {
-      _groceryItem = loadeditems;
-      _isLoading = false;
-    });
   }
 
   void _addNewItem() async {
@@ -82,6 +91,7 @@ class _GroceryListState extends State<GroceryList> {
     final url = Uri.https('flutter-projects-a2fcc-default-rtdb.firebaseio.com',
         'shopping_list/${item.id}.json');
     final response = await http.delete(url);
+
     if (response.statusCode >= 400) {
       setState(() {
         //show errore message

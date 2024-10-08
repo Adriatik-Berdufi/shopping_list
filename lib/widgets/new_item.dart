@@ -52,10 +52,6 @@ class _NewItamState extends State<NewItem> {
         quantity: _enterQuantity,
         category: _selectedCategory,
       ));
-/*       
-      print(_enterName);
-      print(_enterQuantity);
-      print(_selectedCategory.title); */
     }
   }
 
